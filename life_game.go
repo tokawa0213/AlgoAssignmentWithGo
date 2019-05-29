@@ -1,5 +1,3 @@
-// +build ignore
-
 package main
 
 import (
@@ -11,6 +9,25 @@ import (
 
 func add_up(grid [][]int,i,j int)int{
 	return grid[i][j-1]+grid[i][j+1]+grid[i-1][j-1]+grid[i-1][j]+grid[i-1][j+1]+grid[i+1][j-1]+grid[i+1][j]+grid[i+1][j+1]
+}
+
+func calculate_next_generation(generation *[][]int,next_generation *[][]int, r int, c int){
+	for i := 1; i < r-1; i++ {
+		for j := 1; j < c-1; j++ {
+			if (*generation)[i][j] == 0 {
+				if add_up((*generation), i, j) == 3 {
+					(*next_generation)[i][j] = 1
+				}
+			} else {
+				result := add_up((*generation), i, j)
+				if result == 2 || result == 3 {
+					(*next_generation)[i][j] = 1
+				} else {
+					(*next_generation)[i][j] = 0
+				}
+			}
+		}
+	}
 }
 
 func main(){
@@ -51,22 +68,7 @@ func main(){
 				case termbox.KeyEsc:
 					break MAINLOOP
 				case termbox.KeyEnter:
-					for i := 1; i < ROW-1; i++ {
-						for j := 1; j < COLUMN-1; j++ {
-							if generation[i][j] == 0 {
-								if add_up(generation, i, j) == 3 {
-									next_generation[i][j] = 1
-								}
-							} else {
-								result := add_up(generation, i, j)
-								if result == 2 || result == 3 {
-									next_generation[i][j] = 1
-								} else {
-									next_generation[i][j] = 0
-								}
-							}
-						}
-					}
+					calculate_next_generation(&generation,&next_generation,ROW,COLUMN)
 					//deep copy
 					generation = append([][]int{}, next_generation...)
 					next_generation = make([][]int, ROW)
