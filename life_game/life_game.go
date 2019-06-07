@@ -1,4 +1,4 @@
-package main
+package life_game
 
 import (
 	"bufio"
@@ -30,7 +30,7 @@ func calculate_next_generation(generation *[][]int,next_generation *[][]int, r i
 	}
 }
 
-func main(){
+func Life_game(){
 	const COLUMN = 102
 	const ROW = 52
 	const N = 10
@@ -40,12 +40,11 @@ func main(){
 		generation[i] = make([]int, COLUMN)
 		next_generation[i] = make([]int, COLUMN)
 	}
-	f,err := os.Open("proc/life_game.txt")
+	f,err := os.Open("life_game/life_game.txt")
 	if err != nil{
 		panic(err)
 	}
 	defer f.Close()
-
 	err2 := termbox.Init()
 	if err2 != nil {
 		panic(err2)
@@ -56,7 +55,7 @@ func main(){
 	for scanner.Scan() {
 		row := scanner.Text()
 		for j := 0; j < len(row); j++ {
-			generation[count+1][j+1], _ = strconv.Atoi(row[j : j+1])
+			generation[count+1][j+1], _ = strconv.Atoi(row[j:j+1])
 		}
 		count++
 	}
@@ -79,9 +78,9 @@ func main(){
 					for i := 1; i < ROW-1; i++ {
 						for j := 1; j < COLUMN-1; j++ {
 							if generation[i][j] == 1{
-								termbox.SetCell(i, j, []rune(strconv.Itoa(generation[i][j]))[0], termbox.ColorRed, termbox.ColorDefault)
+								termbox.SetCell(j, i, []rune(strconv.Itoa(generation[i][j]))[0], termbox.ColorRed, termbox.ColorDefault)
 							}else{
-								termbox.SetCell(i, j, []rune(strconv.Itoa(generation[i][j]))[0], termbox.ColorDefault, termbox.ColorDefault)
+								termbox.SetCell(j, i, []rune(strconv.Itoa(generation[i][j]))[0], termbox.ColorDefault, termbox.ColorDefault)
 							}
 						}
 					}

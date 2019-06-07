@@ -1,6 +1,4 @@
-// +build ignore
-
-package main
+package lcs
 
 import (
 	"fmt"
@@ -18,13 +16,13 @@ func Reverse( orig string ) string {
 	return strings.Join( c, "" );
 }
 
-func main(){
+func Lcs(){
 	var string_a,string_b string
 	var DP [][]int
 	fmt.Scan(&string_a)
 	fmt.Scan(&string_b)
-	for i:=0;i<len(string_b)+1;i++{
-		DP = append(DP,make([]int,len(string_a)+1))
+	for i:=0;i<len(string_a)+1;i++{
+		DP = append(DP,make([]int,len(string_b)+1))
 	}
 	//creating the DP grid
 	for i := 1;i<len(string_a)+1;i++{

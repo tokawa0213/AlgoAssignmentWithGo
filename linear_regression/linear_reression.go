@@ -1,6 +1,4 @@
-// +build ignore
-
-package main
+package linear_regression
 
 import (
 	"fmt"
@@ -14,7 +12,7 @@ func solve(a,b,ans0,c,d,ans1 float64) (float64,float64){
 	return answer_a,answer_b
 }
 
-func main(){
+func Linear_regression(){
 	var input_num int
 	var x,y,xi2,xiyi,xi,yi float64
 	var point_info [][]float64
