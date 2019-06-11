@@ -3,15 +3,9 @@ package tsp
 import (
 	"fmt"
 	"math"
-	"sync"
+	"math/rand"
 	"time"
 )
-
-type point_object struct {
-	x int
-	y int
-	value int
-}
 
 const MAX = 10000000
 
@@ -25,74 +19,92 @@ func fill_distance_grid(i,j int, distance_grid *[][]int,point_array [][]float64)
 	}
 }
 
-func array_min(number ...int)point_object{
-	p := point_object{}
-	var min = MAX
+func calculate_distance(route []int,distance_array [][]int)int{
+	answer := 0
+	for i:=0;i<len(route)-1;i++{
+		answer += distance_array[route[i]][route[i+1]]
+	}
+	return answer
+}
 
-	for index,value := range number{
-		if value < min{
-			p.value = value
-			p.x = index/int(math.Sqrt(float64(len(number))))
-			p.y = index%int(math.Sqrt(float64(len(number))))
-			min = value
+func search_in_array(array []int,find int)bool{
+	for _,value := range array{
+		if value == find{
+			return true
 		}
 	}
-	return p
+	return false
 }
 
-func flatten(a [][]int) []int{
-	var ret []int
-	for _,value := range a{
-		ret = append(ret,value...)
-	}
-	return ret
-}
-
-func Tsp(){
+func Tsp() {
 	var input_number int
-	var x,y float64
+	var x, y float64
 	var point_array [][]float64
 	var distance_array [][]int
 	var distance_array_piece []int
 	fmt.Scan(&input_number)
 
-	for i:=0;i<input_number;i++{
-		distance_array_piece = append(distance_array_piece,MAX)
+	for i := 0; i < input_number; i++ {
+		distance_array_piece = append(distance_array_piece, MAX)
 	}
 
-	for i:=0;i<input_number;i++{
-		fmt.Scan(&x,&y)
-		point := []float64{x,y}
-		point_array = append(point_array,point)
-		distance_array = append(distance_array,append([]int{},distance_array_piece...))
+	for i := 0; i < input_number; i++ {
+		fmt.Scan(&x, &y)
+		point := []float64{x, y}
+		point_array = append(point_array, point)
+		distance_array = append(distance_array, append([]int{}, distance_array_piece...))
 	}
-
-	var wg sync.WaitGroup
-	c := make(chan bool,50)
 
 	start := time.Now()
-	for i:=0;i<input_number;i++{
-		for j:=0;j<input_number;j++{
-			wg.Add(1)
-			c<-true
-			go fill_distance_grid(i,j,&distance_array,point_array)
-			<-c
-			wg.Done()
+	for i := 0; i < input_number; i++ {
+		for j := 0; j < input_number; j++ {
+			fill_distance_grid(i, j, &distance_array, point_array)
 		}
 	}
-	wg.Wait()
 	end := time.Now()
-	fmt.Printf("%f秒\n",(end.Sub(start)).Seconds())
-	fmt.Println(distance_array)
-	/*
+	fmt.Printf("%f秒\n", (end.Sub(start)).Seconds())
+
+	//Search
+	visited := []int{0}
+	arr := []int{}
 	for{
-		p := array_min(flatten(distance_array)...)
-		if p.value == MAX{
-			return
-		}else{
-			//record the connected dots
-			//change the cell to MAX
+		start_point := 0
+		new_start_point := 0
+		min := MAX
+		for i:=0;i<input_number;i++{
+			if min>distance_array[start_point][i] && !search_in_array(visited,i){
+				min = distance_array[start_point][i]
+				new_start_point = i
+			}
 		}
+		if min == MAX{break}
+		arr = append(arr,distance_array[start_point][new_start_point])
+		visited = append(visited,new_start_point)
+		start_point = new_start_point
 	}
-	*/
+
+	score := calculate_distance(visited,distance_array)
+	fmt.Println(score)
+
+	fmt.Println(visited)
+
+	//2-opt
+	count := 0
+	for{
+		first := rand.Intn(len(visited))
+		second := rand.Intn(len(visited))
+		if first == second{continue}
+		visited[first],visited[second] = visited[second],visited[first]
+		new_score := calculate_distance(visited,distance_array)
+		if score > new_score{
+			score = new_score
+		}else if score == new_score{
+			if count == 1000{break}
+			count++
+		}else{
+			visited[first],visited[second] = visited[second],visited[first]
+		}
+		fmt.Println(score)
+	}
+	fmt.Println(visited)
 }
