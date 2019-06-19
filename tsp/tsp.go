@@ -67,9 +67,9 @@ func Tsp() {
 	//Search
 	visited := []int{0}
 	arr := []int{}
+	start_point := 0
+	new_start_point := 0
 	for{
-		start_point := 0
-		new_start_point := 0
 		min := MAX
 		for i:=0;i<input_number;i++{
 			if min>distance_array[start_point][i] && !search_in_array(visited,i){
@@ -89,8 +89,7 @@ func Tsp() {
 	fmt.Println(visited)
 
 	//2-opt
-	count := 0
-	for{
+	for i:=0;i<1000000;i++{
 		first := rand.Intn(len(visited))
 		second := rand.Intn(len(visited))
 		if first == second{continue}
@@ -98,9 +97,6 @@ func Tsp() {
 		new_score := calculate_distance(visited,distance_array)
 		if score > new_score{
 			score = new_score
-		}else if score == new_score{
-			if count == 1000{break}
-			count++
 		}else{
 			visited[first],visited[second] = visited[second],visited[first]
 		}
